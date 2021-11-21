@@ -2,10 +2,14 @@
 General utils
 """
 import logging
+import glob
+import re
+from os import sep 
+from pathlib import Path
 
 def set_logging(name, verbose=True):
     logging.basicConfig(format='%(message)s', level=logging.INFO)
-    return logging.getLogger()
+    return logging.getLogger(name)
 
 
 LOGGER = set_logging(__name__)
@@ -13,6 +17,8 @@ LOGGER = set_logging(__name__)
 
 def print_args(name, opt):
     LOGGER.info(colorstr(f'{name}: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
+
+
 
 
 def check_file():
@@ -43,6 +49,31 @@ def colorstr(*input):
               'underline': '\033[4m'}
     return ''.join(colors[x] for x in args) + f'{string}' + colors['end']
 
+
+def increment_path(path):
+    """
+    对传入的path逐渐递增, 比如E:\\Data\\image_detection\\coco\\output\\runs\\exp --> E:\\Data\\image_detection\\coco\\output\\runs\\exp1
+    E:\\Data\\image_detection\\coco\\output\\runs\\exp1 --> ...\\exp2
+    或者对..haha.txt --> haha1.txt
+    Args:
+        path (str): [字符串路径]
+
+    Returns:
+        [path]: [Path的对象]
+    """
+    path = Path(path)
+    if path.exists():
+        path, suffix = (path.with_suffix(''), path.suffix) if path.is_file() else (path, '') # 把路径的后缀和文件分开
+        dirs = glob.glob(f'{path}*') # list
+        # E:\\Data\\image_detection\\coco\\output\\runs\\exp匹配的是None,因为里面没有数字exp1匹配的是1
+        searches = [re.search(rf'%s(\d+)' % path.stem, d) for d in dirs if d] 
+        i = [int(s.group()[0]) for s in searches if s]
+        increment_i = max(i) + 1 if i else 1
+        path = Path(f'{path}{increment_i}{suffix}')
+    return path
+
 if __name__ == '__main__':
     string = colorstr('blue', 'hello world')
     print(string)
+    # path = 'E:\\Data\\image_detection\\coco\\output\\runs\\exp'
+    # increment_path(path)
