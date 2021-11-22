@@ -1,8 +1,9 @@
 import torch
 import os 
 import argparse
+import yaml
 from pathlib import Path
-from utils.general import check_file, increment_path, print_args
+from utils.general import LOGGER, check_file, colorstr, increment_path, print_args
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent
@@ -15,10 +16,20 @@ def train(hyp, opt):
     w = save_dir / 'weights'
     w.parent.mkdir(parents=True, exist_ok=True) # 如果存在目录,则不抛出异常
     last, best = w / 'last.pt', w / 'best.pt'
-    
-    
-    pass
 
+    # 读取相关的hyps.yaml超参数
+    if isinstance(hyp, str):
+        with open(hyp, errors='ignore') as f:
+            hyp = yaml.safe_load(f) # dict 
+    LOGGER.info(colorstr('Hyperparemeter: ') + ', '.join(f'{k}={v}' for k, v in hyp.items()))
+
+    # 保存opt和hyp
+    with open(save_dir / 'hyp.yaml', 'w') as f:
+        yaml.safe_dump(hyp, f, sort_keys=False)
+    with open(save_dir / 'opt.yaml', 'w') as f:
+        yaml.safe_dump(vars(opt), f, sort_keys=False)    
+    
+    
 def parse_opt(known=False):
     """
     命令行参数的设置
