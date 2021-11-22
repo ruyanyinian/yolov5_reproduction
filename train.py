@@ -62,6 +62,7 @@ def main(opt):
 
     # TODO(qinyu): 检查一些路径是否正确, 包括一些关于后缀名是否正确
     
+    opt.data = check_file(opt.data)
     # 打印命令行参数
     print_args(FILE.stem, opt)
     opt.save_dir = str(increment_path(Path()))

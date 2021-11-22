@@ -16,17 +16,44 @@ LOGGER = set_logging(__name__)
 
 
 def print_args(name, opt):
+    """
+    打印参数
+    Args:
+        name (str): [需要传给colorstr函数的对象]
+        opt (argparse.Namespace()对象): 
+    """
     LOGGER.info(colorstr(f'{name}: ') + ', '.join(f'{k}={v}' for k, v in vars(opt).items()))
 
-
-
-
-def check_file():
+def check_suffix(file, suffix):
     pass
+
+def check_yaml(file, suffix=('.yaml', 'yml')):
+    return check_file(file, )
+
+
+def check_file(file, suffix=''):
+    """
+    检查字符串路径是否合法
+    Args:
+        file (str): [字符串路径]
+        suffix (str): 文件的后缀名字
+    Returns:
+        [str]: [返回字符串路径]
+    """
+
+    
+    file = str(file)
+    if Path(file).is_file():
+        return file 
+    # TODO(qinyu): 数据集下载功能稍后会开发
 
 
 def colorstr(*input):
-    # Colors a string https://en.wikipedia.org/wiki/ANSI_escape_code, i.e.  colorstr('blue', 'hello world')
+    """
+    字符串的颜色变化
+    Returns:
+        input: tuple, 例如colorstr('blue', 'hello world')
+    """
     *args, string = input if len(input) > 1 else ('blue', 'bold', input[0])  # color arguments, string
     colors = {'black': '\033[30m',  # basic colors
               'red': '\033[31m',
