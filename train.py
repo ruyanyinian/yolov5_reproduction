@@ -1,9 +1,21 @@
+'''
+@File    :   train.py
+@Time    :   2021/11/24 10:55:23
+@Author  :   qinyu
+@Contact :   qinyufight123@126.com
+@License :   * Do Fuck You Want *
+@Desc    :   训练流程相关
+'''
+
+
 import torch
 import os 
 import argparse
 import yaml
 from pathlib import Path
 from utils.general import LOGGER, check_file, check_yaml, colorstr, increment_path, print_args
+from models.yolo import Model
+
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parent
@@ -30,7 +42,7 @@ def train(hyp, opt):
         yaml.safe_dump(vars(opt), f, sort_keys=False)    
     
     # model
-    
+    model = Model()
 def parse_opt(known=False):
     """
     命令行参数的设置
@@ -43,7 +55,7 @@ def parse_opt(known=False):
     parser =  argparse.ArgumentParser()
     parser.add_argument('--hyp', type=str, default=ROOT / 'data/hyps/hyp.scratch.yaml', help='hyperpareters path')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco.yaml', help='dataset yaml file')
-    parser.add_argument('--cfg', type=str, default='', help='model config yaml')
+    parser.add_argument('--cfg', type=str, default=ROOT / 'models/yolov5s.yaml', help='model config yaml')
     parser.add_argument('--project', type=str, default=ROOT / 'output/train', help='save everything in project/name')
     parser.add_argument('--name', type=str, default=ROOT / 'exp', help='save everything in project/name')
     # TODO(qinyu): 带填充相关的命令行参数
