@@ -53,7 +53,32 @@ class Conv(nn.Module):
         return self.act(self.bn(self.conv(x)))
     
 
+class Bottleneck(nn.Module):
+    """标准的瓶颈层"""
+    def __init__(self, c_in, c_out, expansion_rate,  g=1, shortcut=True):
+        """
+        瓶颈模块: 输入的特征图和输出的特征图通道数保持一致, 
+        并且中间层的通道数应该小于输入和输出的通道数, kernelsize是3×3
+        Args:
+            c_in (int): [输入的通道数]
+            c_out (int): [输出的通道数]
+            expansion_ratio (float): [用于放大和缩小channel数量]
+            g (int, optional): [group数]. Defaults to 1.
+            shortcut (bool, optional): [输入的特征图是否和输出的特征图进行连接]. Defaults to True.
+        """
+        super().__init__()
+        c_middle = int(c_out * expansion_rate) # 这个是中间层的通道数
+        self.cv1 = Conv(c_in, c_middle, 1, 1)
+        self.cv2 = nn.Conv2d(c_middle, c_out, 3, 1)
+        self.add = shortcut and c_in == c_out # 是否进行特征融合, 特征融合必须保证输入的特征图和输出的特征图的一致
+    
+    def forward(self, x):
+        return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))
+    
 
 if __name__ == '__main__':
     # 测试一些conv
+
+    img = torch.randn() 
+    model = Bottleneck()
     pass
